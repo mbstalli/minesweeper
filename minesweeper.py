@@ -9,6 +9,7 @@ HEIGHT = 500
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Minesweeper")
 font = pygame.font.SysFont('Arial', 30, True)
+numbers = [pygame.image.load('one.png'), pygame.image.load('two.png'), pygame.image.load('three.png'), pygame.image.load('four.png'), pygame.image.load('five.png'), pygame.image.load('six.png'), pygame.image.load('seven.png'), pygame.image.load('eight.png')]
 
 #grid array
 grid = []
