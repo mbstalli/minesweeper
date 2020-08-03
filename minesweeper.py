@@ -35,10 +35,15 @@ class cell(object):
 		self.revealed = False
 		self.bombAround = 0
 		self.flag = False
-		if(random.randint(0, cellcount) < round(cellcount / 6)):
+		if(random.randint(0, cellcount) < round(cellcount / 8)):
 			self.bomb = True
 		else:
 			self.bomb = False
+
+def searchForCell(xcoord, ycoord, grid):
+	for entry in grid:
+		if entry.x == xcoord and entry.y == ycoord:
+			return entry
 
 def searchList(xcoord, ycoord, grid):
 	bombcount = 0
@@ -46,6 +51,112 @@ def searchList(xcoord, ycoord, grid):
 		if entry.x == xcoord and entry.y == ycoord and entry.bomb == True:
 			bombcount = 1
 	return bombcount
+
+def searchAndReveal(xcoord, ycoord, grid, bombcount):
+	for space in grid:
+		if xcoord == space.x and ycoord == space.y:
+			space.revealed = True
+			space.bombAround = bombcount
+
+def revealList(xcoord, ycoord, grid):
+	for entry in grid:
+		if entry.x == xcoord and entry.y == ycoord:
+			entry.revealed = True
+
+def searchForBombs(xcoord, ycoord, grid):
+	# we have our coordinates, now we need to look around it to find if there are any bombs
+
+	# top left
+	bombcount = 0
+	if xcoord - 1 > 0 and ycoord - 1 > 0:
+		bombcount += searchList(xcoord - 1, ycoord - 1, grid)
+
+	#top middle
+	if ycoord - 1 > 0:
+		bombcount += searchList(xcoord, ycoord - 1, grid)
+
+	#top right
+	if xcoord + 1 < 17 and ycoord - 1 > 0:
+		bombcount += searchList(xcoord + 1, ycoord - 1, grid)
+
+	#left middle
+	if xcoord - 1 > 0:
+		bombcount += searchList(xcoord - 1, ycoord, grid)
+
+	#right middle
+	if xcoord + 1 < 17:
+		bombcount += searchList(xcoord + 1, ycoord, grid)
+
+	#left bottom
+	if xcoord - 1 > 0 and ycoord + 1 < 17:
+		bombcount += searchList(xcoord - 1, ycoord + 1, grid)
+
+	#middle bottom
+	if ycoord + 1 < 17:
+		bombcount += searchList(xcoord, ycoord + 1, grid)
+
+	#right bottom
+	if xcoord + 1 < 17 and ycoord + 1 < 17:
+		bombcount += searchList(xcoord + 1, ycoord + 1, grid)
+
+	return bombcount
+
+def revealEmptyCells(grid, xcoord, ycoord):
+
+	if xcoord - 1 > 0 and ycoord - 1 > 0:
+		bombcount = searchForBombs(xcoord - 1, ycoord - 1, grid)
+
+		searchAndReveal(xcoord - 1, ycoord - 1, grid, bombcount)
+		revealList(xcoord - 1, ycoord - 1, grid)
+
+	#top middle
+	if ycoord - 1 > 0:
+		bombcount = searchForBombs(xcoord, ycoord - 1, grid)
+		
+		searchAndReveal(xcoord, ycoord - 1, grid, bombcount)
+		revealList(xcoord, ycoord - 1, grid)
+
+	#top right
+	if xcoord + 1 < 17 and ycoord - 1 > 0:
+		bombcount = searchForBombs(xcoord + 1, ycoord - 1, grid)
+		
+		searchAndReveal(xcoord + 1, ycoord - 1, grid, bombcount)
+		revealList(xcoord + 1, ycoord - 1, grid)
+
+	#left middle
+	if xcoord - 1 > 0:
+		bombcount = searchForBombs(xcoord - 1, ycoord, grid)
+		
+		searchAndReveal(xcoord - 1, ycoord, grid, bombcount)
+		revealList(xcoord - 1, ycoord, grid)
+
+	#right middle
+	if xcoord + 1 < 17:
+		bombcount = searchForBombs(xcoord + 1, ycoord, grid)
+		
+		searchAndReveal(xcoord + 1, ycoord, grid, bombcount)
+		revealList(xcoord + 1, ycoord, grid)
+
+	#left bottom
+	if xcoord - 1 > 0 and ycoord + 1 < 17:
+		bombcount = searchForBombs(xcoord - 1, ycoord + 1, grid)
+		
+		searchAndReveal(xcoord - 1, ycoord + 1, grid, bombcount)
+		revealList(xcoord - 1, ycoord + 1, grid)
+
+	#middle bottom
+	if ycoord + 1 < 17:
+		bombcount = searchForBombs(xcoord, ycoord + 1, grid)
+		
+		searchAndReveal(xcoord, ycoord + 1, grid, bombcount)
+		revealList(xcoord, ycoord + 1, grid)
+
+	#right bottom
+	if xcoord + 1 < 17 and ycoord + 1 < 17:
+		bombcount = searchForBombs(xcoord + 1, ycoord + 1, grid)
+		
+		searchAndReveal(xcoord + 1, ycoord + 1, grid, bombcount)
+		revealList(xcoord + 1, ycoord + 1, grid)
 
 # setting up grid by adding cells to list
 # each list has an x and y coordinate in the grid
@@ -106,42 +217,14 @@ while running:
 					ycoord += 1
 					posy -= 25
 
+				bombcount = searchForBombs(xcoord, ycoord, grid)
 
-				# we have our coordinates, now we need to look around it to find if there are any bombs
+				# for entry in grid:
+				# 	if entry.x == xcoord and entry.y == ycoord and entry.bomb == True:
+				# 		pygame.quit()
 
-				# top left
-				bombcount = 0
-				if xcoord - 1 > 0 and ycoord - 1 > 0:
-					bombcount += searchList(xcoord - 1, ycoord - 1, grid)
-
-				#top middle
-				if ycoord - 1 > 0:
-					bombcount += searchList(xcoord, ycoord - 1, grid)
-
-				#top right
-				if xcoord + 1 < 17 and ycoord - 1 > 0:
-					bombcount += searchList(xcoord + 1, ycoord - 1, grid)
-
-				#left middle
-				if xcoord - 1 > 0:
-					bombcount += searchList(xcoord - 1, ycoord, grid)
-
-				#right middle
-				if xcoord + 1 < 17:
-					bombcount += searchList(xcoord + 1, ycoord, grid)
-
-				#left bottom
-				if xcoord - 1 > 0 and ycoord + 1 < 17:
-					bombcount += searchList(xcoord - 1, ycoord + 1, grid)
-
-				#middle bottom
-				if ycoord + 1 < 17:
-					bombcount += searchList(xcoord, ycoord + 1, grid)
-
-				#right bottom
-				if xcoord + 1 < 17 and ycoord + 1 < 17:
-					bombcount += searchList(xcoord + 1, ycoord + 1, grid)
-
+				if bombcount == 0:
+					revealEmptyCells(grid, xcoord, ycoord)
 
 				#edit the corresponding cell in the grid
 				for space in grid:
