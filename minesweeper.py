@@ -37,7 +37,7 @@ class cell(object):
 		self.bombAround = 0
 		self.flag = False
 		#randomly determines bomb location
-		if(random.randint(0, cellcount) < round(cellcount / 12)):
+		if(random.randint(0, cellcount) < round(cellcount / 25)):
 			self.bomb = True
 		else:
 			self.bomb = False
@@ -203,7 +203,6 @@ for i in range(1, cellcount + 1):
 for i in grid:
 	if i.bomb:
 		mines += 1
-		#print(i.x, i.y)
 
 #mainloop
 score = 0
@@ -219,6 +218,7 @@ while running:
 
 	isBomb = False
 	gameWon = False
+	gameLost = False
 
 	xcoord = 0
 	ycoord = 0
@@ -264,6 +264,7 @@ while running:
 
 				if isBomb:
 					revealAllBombs(grid)
+					gameLost = True
 
 				#functionality to find adjacent empty cells and reveal them
 				if bombcount == 0 and not isBomb:
@@ -308,51 +309,58 @@ while running:
 	#fill the screen with white
 	win.fill((255, 255, 255))
 
+	text = font.render("Mines: " + str(mines), 1, (0, 0, 0))
+	win.blit(text, (20, 10))
+
+	x = 25
+	y = 50
+
+	#image processing for the screen
+	for i in grid:
+		#if you have clicked on the cell
+		if i.revealed == True and i.flag == False:
+			#if it is a bomb
+			if i.bomb:
+				win.blit(mine, (x, y))
+			#if there are no adjacent bombs
+			elif i.bombAround == 0:
+				win.blit(empty, (x, y))
+			#if there are bombs around, show the amount
+			else:
+				win.blit(numbers[i.bombAround - 1], (x, y))
+			x += 25
+			if i.x % column == 0:
+				y += 25
+				x = 25
+		#if you have right-clicked on a cell, a flag will appear
+		elif i.flag == True:
+			win.blit(flag, (x, y))
+			x += 25
+			if i.x % column == 0:
+				y += 25
+				x = 25
+		#if you haven't clicked on the cell at all
+		else:
+			win.blit(tile, (x, y))
+			x += 25
+			if i.x % column == 0:
+				y += 25
+				x = 25
+
 	if gameWon:
 		text = font2.render("You win!", 1, (0, 0, 0))
 		textRect = text.get_rect(center = (WIDTH/2, HEIGHT/2))
 		win.blit(text, textRect)
 		pygame.display.update()
 		time.sleep(4)
-		break
-	else:
-		text = font.render("Mines: " + str(mines), 1, (0, 0, 0))
-		win.blit(text, (20, 10))
-
-		x = 25
-		y = 50
-
-		#image processing for the screen
-		for i in grid:
-			#if you have clicked on the cell
-			if i.revealed == True and i.flag == False:
-				#if it is a bomb
-				if i.bomb:
-					win.blit(mine, (x, y))
-				#if there are no adjacent bombs
-				elif i.bombAround == 0:
-					win.blit(empty, (x, y))
-				#if there are bombs around, show the amount
-				else:
-					win.blit(numbers[i.bombAround - 1], (x, y))
-				x += 25
-				if i.x % column == 0:
-					y += 25
-					x = 25
-			#if you have right-clicked on a cell, a flag will appear
-			elif i.flag == True:
-				win.blit(flag, (x, y))
-				x += 25
-				if i.x % column == 0:
-					y += 25
-					x = 25
-			#if you haven't clicked on the cell at all
-			else:
-				win.blit(tile, (x, y))
-				x += 25
-				if i.x % column == 0:
-					y += 25
-					x = 25
+		running = False
+	elif gameLost:
+		text = font2.render("You lost.", 1, (0, 0, 0))
+		textRect = text.get_rect(center = (WIDTH/2, HEIGHT/2))
+		win.blit(text, textRect)
+		pygame.display.update()
+		time.sleep(4)
+		running = False
 
 	pygame.display.update()
 
