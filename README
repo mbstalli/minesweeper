@@ -1,0 +1,5 @@
+Single use Minesweeper game using Python3 and Pygame.
+
+Game board is 16x16.
+
+Load all files into directory and run using Python3.

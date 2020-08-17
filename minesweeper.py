@@ -37,7 +37,7 @@ class cell(object):
 		self.bombAround = 0
 		self.flag = False
 		#randomly determines bomb location
-		if(random.randint(0, cellcount) < round(cellcount / 25)):
+		if(random.randint(0, cellcount) < round(cellcount / 6)):
 			self.bomb = True
 		else:
 			self.bomb = False
@@ -228,6 +228,10 @@ while running:
 			running = False
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			posx, posy = pygame.mouse.get_pos()
+
+			#if click is outside of grid, do nothing
+			if posx > 425 or posx < 25 or posy > 475 or posy < 50:
+				continue
 
 			#right click
 			if event.button == 3:
